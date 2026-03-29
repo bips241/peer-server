@@ -2,6 +2,8 @@ const { PeerServer } = require('peer');
 const express = require('express');
 const app = express();
 
+app.set('trust proxy', 1);
+
 // Setting the port dynamically or defaulting to 10000
 const PORT = process.env.PORT || 10000;
 
@@ -17,9 +19,10 @@ const server = app.listen(PORT, () => {
 const peerServer = PeerServer({
   server,
   path: '/peerjs',  // This is the path for PeerJS connections
-  // You can add more options if needed (like settings for authentication, etc.)
-  debug: true,  // Enable debug mode to check what's going wrong if there are issues
-  allow_discovery: true,  // Allow others to discover this PeerJS server
+  debug: process.env.NODE_ENV !== 'production',
+  allow_discovery: false,
+  proxied: true,
+  pingInterval: Number(process.env.PEER_PING_INTERVAL || 5000),
 });
 
 // Optional: Add logging to monitor any issues or errors
@@ -29,4 +32,8 @@ peerServer.on('connection', (client) => {
 
 peerServer.on('disconnect', (client) => {
   console.log('Peer disconnected:', client.id);
+});
+
+peerServer.on('error', (error) => {
+  console.error('Peer server error:', error);
 });
