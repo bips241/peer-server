@@ -17,6 +17,7 @@ const server = app.listen(PORT, () => {
 
 // Initialize the PeerJS server on the existing Express server
 const peerServer = ExpressPeerServer(server, {
+  path: '/peerjs',
   debug: process.env.NODE_ENV !== 'production',
   allow_discovery: false,
   proxied: true,
