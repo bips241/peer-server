@@ -1,4 +1,4 @@
-const { ExpressPeerServer } = require('peer');
+const { PeerServer } = require('peer');
 const express = require('express');
 const app = express();
 
@@ -16,15 +16,14 @@ const server = app.listen(PORT, () => {
 });
 
 // Initialize the PeerJS server on the existing Express server
-const peerServer = ExpressPeerServer(server, {
+const peerServer = PeerServer({
+  server,
   path: '/peerjs',
   debug: process.env.NODE_ENV !== 'production',
   allow_discovery: false,
   proxied: true,
   pingInterval: Number(process.env.PEER_PING_INTERVAL || 5000),
 });
-
-app.use('/peerjs', peerServer);
 
 // Optional: Add logging to monitor any issues or errors
 peerServer.on('connection', (client) => {
